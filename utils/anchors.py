@@ -1,5 +1,6 @@
 import numpy as np
 
+#生成基本的锚框
 def generate_anchor_base(base_size=16, ratios=[0.5,1,2],
                          anchor_scales=[8,16,32]):
     anchor_base = np.zeros((len(ratios)*len(anchor_scales),4),
@@ -23,11 +24,14 @@ def _enumerate_shifted_anchor(anchor_base,feat_stride,height,width):
     shift_x, shift_y = np.meshgrid(shift_x, shift_y)
     shift = np.stack((shift_x.ravel(),shift_y.ravel(),
                       shift_x.ravel(),shift_y.ravel(),), axis=1)
+    print(shift.shape)
     #每个网格点上的9个先验框
     A = anchor_base.shape[0]
     K = shift.shape[0]
+    #print(A,K) -> 9 1444
     anchor = anchor_base.reshape((1,A,4)) + \
              shift.reshape((K,1,4))
+    print(anchor.shape)
     #所有的先验框
     anchor = anchor.reshape((K*A,4)).astype(np.float32)
     return anchor
@@ -35,7 +39,7 @@ def _enumerate_shifted_anchor(anchor_base,feat_stride,height,width):
 if __name__ == "__main__":
     import  matplotlib.pyplot as plt
     nine_anchors = generate_anchor_base()
-    print(nine_anchors)
+    #print(nine_anchors)
     height,width,feat_stride = 38,38,16
     anchors_all = _enumerate_shifted_anchor(nine_anchors,feat_stride,height,width)
 
